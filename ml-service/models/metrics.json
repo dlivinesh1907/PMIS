@@ -1,0 +1,38 @@
+{
+  "dataset_info": {
+    "total_samples": 4200,
+    "features": [
+      "temperature",
+      "vibration",
+      "pressure",
+      "rpm",
+      "current",
+      "voltage",
+      "acoustic_level",
+      "operating_hours"
+    ],
+    "synthetic": true,
+    "note": "Trained on simulated industrial run-to-failure degradation data mimicking CNC milling centers."
+  },
+  "anomaly_detection": {
+    "model": "IsolationForest",
+    "precision": 0.924,
+    "recall": 0.897,
+    "f1": 0.910,
+    "accuracy": 0.938
+  },
+  "failure_prediction": {
+    "model": "RandomForestClassifier",
+    "accuracy": 0.942,
+    "precision": 0.918,
+    "recall": 0.935,
+    "f1": 0.926,
+    "roc_auc": 0.978
+  },
+  "rul_prediction": {
+    "model": "RandomForestRegressor",
+    "mae": 14.28,
+    "rmse": 21.65,
+    "r2_score": 0.914
+  }
+}

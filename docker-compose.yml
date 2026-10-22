@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:6.0
+    container_name: pmis-mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - pmis-network
+
+  ml-service:
+    build:
+      context: ./ml-service
+      dockerfile: Dockerfile
+    container_name: pmis-ml-service
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+    networks:
+      - pmis-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: pmis-backend
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - MONGO_URI=mongodb://mongodb:27017/predictive_maintenance
+      - JWT_SECRET=predictive_maintenance_jwt_secret_2026_super_secure
+      - ML_SERVICE_URL=http://ml-service:8000
+      - CLIENT_URL=http://localhost:5173
+    depends_on:
+      - mongodb
+      - ml-service
+    networks:
+      - pmis-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: pmis-frontend
+    restart: always
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:5000/api
+      - VITE_SOCKET_URL=http://localhost:5000
+    depends_on:
+      - backend
+    networks:
+      - pmis-network
+
+volumes:
+  mongo_data:
+
+networks:
+  pmis-network:
+    driver: bridge
